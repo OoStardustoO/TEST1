@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>宜蘭三天兩夜 10 條路線規劃</title>
+  <style>
+    :root {
+      --bg: #f5fbff;
+      --card: #ffffff;
+      --primary: #0f766e;
+      --primary-soft: #e6fffb;
+      --secondary: #2563eb;
+      --accent: #f59e0b;
+      --text: #18324b;
+      --muted: #61778a;
+      --border: #d8e6ef;
+      --shadow: 0 16px 42px rgba(24, 50, 75, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(180deg, #ecfeff 0%, #f5fbff 45%, #ffffff 100%);
+      color: var(--text);
+    }
+    .container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+    .hero {
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.96), rgba(37, 99, 235, 0.88));
+      color: #fff; border-radius: 28px; padding: 34px; box-shadow: var(--shadow);
+    }
+    .hero h1 { margin: 0 0 12px; font-size: clamp(2rem, 3.2vw, 3.1rem); }
+    .hero p { margin: 0; max-width: 820px; line-height: 1.8; color: rgba(255,255,255,0.92); }
+    .hero-grid,.filter-grid,.route-grid,.detail-grid,.days,.quad-grid { display: grid; gap: 20px; }
+    .hero-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 24px; }
+    .hero-card,.panel,.route-card,.detail-card,.day-card,.note-card,.quad-card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow); }
+    .hero-card { padding: 18px; color: #12324e; }
+    .hero-card strong { display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.95rem; }
+    .hero-card span { font-weight: 700; font-size: 1.1rem; }
+    .section-title { margin: 32px 0 16px; font-size: 1.55rem; }
+    .filter-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .panel,.detail-card,.note-card { padding: 20px; }
+    .panel h3,.detail-card h3,.note-card h3 { margin-top: 0; margin-bottom: 12px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip { border: 1px solid var(--border); background: #f8fcff; color: var(--text); padding: 10px 14px; border-radius: 999px; cursor: pointer; transition: all .18s ease; font-size: .95rem; }
+    .chip.active,.chip:hover { background: var(--primary); border-color: var(--primary); color: #fff; transform: translateY(-1px); }
+    .route-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 18px; }
+    .route-card { padding: 18px; cursor: pointer; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+    .route-card:hover,.route-card.active { transform: translateY(-2px); border-color: #8fd7ce; box-shadow: 0 18px 46px rgba(15, 118, 110, 0.12); }
+    .route-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+    .route-card h3 { margin: 0 0 8px; font-size: 1.08rem; }
+    .route-card p { margin: 0; color: var(--muted); line-height: 1.7; font-size: .94rem; }
+    .tag,.mini-tag { display: inline-flex; align-items: center; border-radius: 999px; font-size: .84rem; }
+    .tag { padding: 8px 12px; background: var(--primary-soft); color: var(--primary); font-weight: 700; white-space: nowrap; }
+    .mini-tag { padding: 6px 10px; background: #f7fafc; border: 1px solid var(--border); color: #466275; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin: 22px 0 8px; }
+    .summary-badge { display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 999px; background: #eefcfb; border: 1px solid #c4efe7; color: var(--primary); font-weight: 700; }
+    .detail-grid { grid-template-columns: 1.1fr .9fr; align-items: start; margin-top: 18px; }
+    .days { grid-template-columns: 1fr; margin-top: 18px; }
+    .quad-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 18px; }
+    .quad-card { padding: 18px; background: #fcfeff; }
+    .quad-card h4 { margin: 0 0 10px; font-size: 1rem; }
+    .quad-card ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.8; }
+    .day-card { overflow: hidden; }
+    .day-header { padding: 18px 22px; background: linear-gradient(90deg, rgba(15,118,110,0.12), rgba(37,99,235,0.12)); border-bottom: 1px solid var(--border); }
+    .day-header h4 { margin: 0 0 6px; font-size: 1.06rem; }
+    .day-header p { margin: 0; color: var(--muted); line-height: 1.7; }
+    .timeline { padding: 18px 22px 22px; display: grid; gap: 14px; }
+    .stop { display: grid; grid-template-columns: 84px 1fr; gap: 14px; }
+    .time { font-weight: 700; color: var(--primary); background: #ebfffc; border: 1px solid #c4efe7; border-radius: 12px; text-align: center; padding: 8px 10px; height: fit-content; }
+    .stop-content h5 { margin: 0 0 6px; font-size: 1rem; }
+    .stop-content p,.note-card li,.detail-card li { margin: 0; line-height: 1.7; color: var(--muted); }
+    .note-card ul,.detail-card ul { margin: 10px 0 0; padding-left: 18px; }
+    .empty { padding: 24px; color: var(--muted); border: 1px dashed var(--border); border-radius: 18px; background: #fbfeff; }
+    @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) {
+      .container { width: min(100% - 20px, 1200px); }
+      .hero { padding: 24px 20px; }
+      .quad-grid { grid-template-columns: 1fr; }
+      .stop { grid-template-columns: 1fr; }
+      .time { width: fit-content; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>宜蘭三天兩夜・10 條主題路線</h1>
+      <p>我把宜蘭三天兩夜整理成 10 條不同風格的路線，並且在畫面上提供多種篩選選項。你可以依照遊客類型、交通方式與旅遊偏好來挑選適合的方案，例如全家出遊、有長者同行、情侶約會、好友出遊、戶外派或文青慢旅。</p>
+      <div class="hero-grid">
+        <div class="hero-card"><strong>路線數量</strong><span>10 條完整行程</span></div>
+        <div class="hero-card"><strong>旅遊天數</strong><span>3 天 2 夜</span></div>
+        <div class="hero-card"><strong>可篩選條件</strong><span>遊客類型／交通／風格</span></div>
+        <div class="hero-card"><strong>內容包含</strong><span>每日景點、餐食、提醒</span></div>
+      </div>
+    </section>
+    <h2 class="section-title">選擇你想看的路線條件</h2>
+    <section class="filter-grid">
+      <div class="panel"><h3>遊客類型</h3><div class="chips" id="travelerFilters"></div></div>
+      <div class="panel"><h3>交通方式</h3><div class="chips" id="transportFilters"></div></div>
+      <div class="panel"><h3>旅遊風格</h3><div class="chips" id="themeFilters"></div></div>
+    </section>
+    <div class="toolbar"><div class="summary-badge" id="resultSummary">目前顯示：全部路線</div></div>
+    <section class="route-grid" id="routeGrid"></section>
+    <section class="detail-grid">
+      <div class="detail-card">
+        <h3 id="routeTitle">請先選擇一條路線</h3>
+        <p id="routeIntro" class="empty">點選上方任一路線卡片後，這裡會顯示完整的三天兩夜安排、適合遊客類型、建議住宿與特色亮點。</p>
+        <div id="routeMeta"></div>
+        <div class="quad-grid" id="routeQuadrants"></div>
+        <div class="days" id="itinerary"></div>
+      </div>
+      <div class="note-card">
+        <h3>路線資訊</h3>
+        <div id="routeInfo" class="empty">選擇路線後可查看建議住宿區域、適合對象、必吃推薦與旅行提醒。</div>
+      </div>
+    </section>
+  </div>
+  <script>
+    const filterOptions = {
+      travelers: [{ id: 'all', label: '全部' }, { id: 'family', label: '全家出遊' }, { id: 'senior', label: '長者同行' }, { id: 'couple', label: '情侶約會' }, { id: 'friends', label: '好友出遊' }, { id: 'parentkid', label: '親子旅行' }],
+      transports: [{ id: 'all', label: '全部' }, { id: 'car', label: '開車自駕' }, { id: 'train', label: '火車為主' }, { id: 'bus', label: '客運輕旅' }],
+      themes: [{ id: 'all', label: '全部' }, { id: 'relax', label: '療癒慢旅' }, { id: 'familyfun', label: '親子同樂' }, { id: 'romance', label: '浪漫約會' }, { id: 'nature', label: '山海戶外' }, { id: 'culture', label: '文青文化' }, { id: 'food', label: '美食夜市' }]
+    };
+    const routes = [
+      { id: 'r1', title: '溫泉療癒慢旅線', travelerTypes: ['couple', 'senior'], travelerLabels: ['情侶約會', '長者同行'], transport: 'car', transportLabel: '開車自駕', theme: 'relax', themeLabel: '療癒慢旅', area: '礁溪、宜蘭市、蘇澳', stay: '礁溪溫泉區', intro: '主打泡湯、咖啡館與節奏舒服的景點，適合想真正放鬆的旅客。', highlights: ['泡湯放鬆', '步調輕鬆', '適合長者'], foods: ['礁溪蔥油餅', '溫泉拉麵', '奶凍捲'], drinks: ['溫泉街手沖咖啡', '日系甜點店熱茶', '景觀咖啡館下午茶'], play: ['湯圍溝足湯', '冬山河綠舟散步', '梅花湖環湖慢遊'], shop: ['奶凍捲', '蜜餞', '牛舌餅'], tips: ['每天控制 3 至 4 個主要點最舒服。', '泡湯旅宿建議提早預訂。'], days: [{ title: 'Day 1｜礁溪暖身', focus: '抵達後以礁溪市區與溫泉行程為主。', stops: [{ time: '10:30', name: '抵達礁溪', desc: '寄放行李後先熟悉周邊環境。', meta: ['住宿方便', '少走路'] }, { time: '11:30', name: '午餐：礁溪小吃', desc: '安排蔥油餅、雞肉飯或在地麵店。', meta: ['在地味', '不踩雷'] }, { time: '13:30', name: '湯圍溝公園', desc: '足湯加散步，適合全程暖身。', meta: ['長者友善', '節奏慢'] }, { time: '15:30', name: '咖啡館午茶', desc: '找一間景觀或日系咖啡館休息。', meta: ['情侶感', '雨天也適合'] }, { time: '18:00', name: '入住泡湯', desc: '晚餐後回飯店享受溫泉。', meta: ['放鬆重點', '建議住礁溪'] }] }, { title: 'Day 2｜冬山＋蘇澳', focus: '安排自然景觀與海邊景點，但不走太趕。', stops: [{ time: '09:00', name: '冬山河綠舟', desc: '搭船或散步都很愜意。', meta: ['平緩好走', '拍照好看'] }, { time: '12:00', name: '午餐：冬山簡餐', desc: '安排用餐舒適的餐廳。', meta: ['好休息', '適合長輩'] }, { time: '14:00', name: '梅花湖慢遊', desc: '散步或環湖，感受宜蘭慢生活。', meta: ['低體力', '療癒系'] }, { time: '17:00', name: '南方澳觀景', desc: '傍晚看海景，晚餐可吃海鮮。', meta: ['山海切換', '景色佳'] }] }, { title: 'Day 3｜宜蘭市區收尾', focus: '文青散步與伴手禮採買。', stops: [{ time: '10:00', name: '宜蘭設治紀念館', desc: '安靜舒適，適合最後一天。', meta: ['文化感', '短停'] }, { time: '12:00', name: '午餐：宜蘭市區', desc: '蒜味肉羹或特色定食。', meta: ['經典宜蘭味', '順路'] }, { time: '13:30', name: '伴手禮採買', desc: '奶凍捲、蜜餞、牛舌餅。', meta: ['收尾採買', '送禮方便'] }, { time: '15:00', name: '返程', desc: '保留彈性避免塞車。', meta: ['行程圓滿', '不趕路'] }] }] },
+      { id: 'r2', title: '全家歡樂農場線', travelerTypes: ['family', 'parentkid'], travelerLabels: ['全家出遊', '親子旅行'], transport: 'car', transportLabel: '開車自駕', theme: 'familyfun', themeLabel: '親子同樂', area: '員山、羅東、冬山、礁溪', stay: '羅東夜市周邊', intro: '結合農場、觀光工廠與夜市，適合有孩子的家庭一起玩。', highlights: ['互動農場', '夜市美食', '雨天備案多'], foods: ['卜肉', '糕渣', '羅東夜市小吃'], drinks: ['鮮奶牧場飲品', '果醬氣泡飲', '親子咖啡館果汁'], play: ['農場餵動物', '冬山河奔跑放電', '傳藝中心手作'], shop: ['果醬伴手禮', 'DIY 餅乾禮盒', '奶凍捲'], tips: ['建議攜帶推車與替換衣物。', '農場熱門時段可先預約。'], days: [{ title: 'Day 1｜農場互動日', focus: '用互動性高的景點打開孩子的旅遊興致。', stops: [{ time: '10:30', name: '張美阿嬤農場', desc: '餵食、互動、拍照都很受歡迎。', meta: ['親子熱門', '停留 1.5 小時'] }, { time: '12:30', name: '午餐：員山餐廳', desc: '選座位寬敞的親子友善餐廳。', meta: ['全家舒適', '休息方便'] }, { time: '14:30', name: '橘之鄉或觀光工廠', desc: '可以採果、試吃、手作。', meta: ['雨天備案', '伴手禮'] }, { time: '18:00', name: '羅東夜市', desc: '晚餐直接在夜市邊逛邊吃。', meta: ['氣氛熱鬧', '選擇多'] }] }, { title: 'Day 2｜跑跳放電日', focus: '安排大空間景點，讓小朋友自在活動。', stops: [{ time: '09:00', name: '冬山河親水公園', desc: '散步、騎車、草地活動。', meta: ['空間寬敞', '適合親子'] }, { time: '12:00', name: '午餐：冬山河周邊', desc: '簡餐或合菜餐廳都適合。', meta: ['移動順', '不趕'] }, { time: '14:00', name: '傳藝中心', desc: '手作、街區與表演一次滿足。', meta: ['寓教於樂', '半日重點'] }, { time: '18:00', name: '礁溪泡腳', desc: '晚上安排輕鬆足湯，幫全家放鬆。', meta: ['舒壓收尾', '長輩也喜歡'] }] }, { title: 'Day 3｜輕鬆拍照返程', focus: '不排太操的點，以輕鬆採買與拍照為主。', stops: [{ time: '10:00', name: '幾米公園', desc: '停留時間不長，但很好拍照。', meta: ['收尾景點', '孩子接受度高'] }, { time: '11:30', name: '午餐：宜蘭市區', desc: '吃完順便買伴手禮。', meta: ['採買方便', '返程順路'] }, { time: '13:30', name: '伴手禮採買', desc: '奶凍捲、牛舌餅、蜜餞。', meta: ['好帶回家', '送親友'] }, { time: '14:30', name: '返程', desc: '保留休息時間。', meta: ['適合全家', '不趕路'] }] }] },
+      { id: 'r3', title: '長者友善悠閒線', travelerTypes: ['senior', 'family'], travelerLabels: ['長者同行', '全家出遊'], transport: 'car', transportLabel: '開車自駕', theme: 'relax', themeLabel: '療癒慢旅', area: '礁溪、宜蘭市、羅東', stay: '礁溪或宜蘭市區', intro: '減少爬坡與長距離步行，安排舒適、平緩、休息點多的行程。', highlights: ['少走路', '餐廳舒適', '景點平緩'], foods: ['鴨賞料理', '蒜味肉羹', '溫泉蔬食'], drinks: ['熱茶', '手沖咖啡', '溫泉旅宿迎賓茶'], play: ['湯圍溝公園散步', '文學館慢遊', '林業園區輕鬆走'], shop: ['蜜餞', '牛舌餅', '在地伴手禮盒'], tips: ['優先選擇有電梯的住宿。', '車程每 1 至 1.5 小時可安排短暫休息。'], days: [{ title: 'Day 1｜礁溪放鬆', focus: '把移動距離縮短，第一天以休息為主。', stops: [{ time: '11:00', name: '飯店寄物', desc: '抵達後先休息，讓長輩不用久站。', meta: ['友善安排', '減少疲勞'] }, { time: '12:00', name: '午餐：飯店周邊', desc: '選擇合菜或簡餐類餐廳。', meta: ['座位舒適', '方便休息'] }, { time: '14:00', name: '湯圍溝公園', desc: '平緩好走，可視體力決定停留時間。', meta: ['步行簡單', '可足湯'] }, { time: '16:00', name: '飯店休息泡湯', desc: '回住宿放鬆，不再排緊湊點。', meta: ['適合長者', '真正休息'] }] }, { title: 'Day 2｜市區與羅東', focus: '安排平面型景點與舒適午餐。', stops: [{ time: '09:30', name: '宜蘭文學館周邊', desc: '環境安靜，慢慢走即可。', meta: ['文化散步', '平緩路線'] }, { time: '12:00', name: '午餐：宜蘭市區餐廳', desc: '建議預約座位舒適餐廳。', meta: ['長輩友善', '不排隊'] }, { time: '14:30', name: '羅東林業文化園區', desc: '視體力輕鬆散步，不需太久。', meta: ['綠意多', '好拍照'] }, { time: '17:30', name: '早點回住宿', desc: '晚餐後早些休息。', meta: ['不熬夜', '行程溫和'] }] }, { title: 'Day 3｜採買返程', focus: '最後一天只留簡單景點與採買。', stops: [{ time: '10:00', name: '伴手禮店', desc: '集中採買，避免奔波。', meta: ['效率高', '少移動'] }, { time: '11:30', name: '午餐', desc: '用完餐再返程較從容。', meta: ['平穩收尾', '不趕'] }, { time: '13:30', name: '返程', desc: '結束悠閒旅程。', meta: ['適合長者', '體力負擔低'] }] }] },
+      { id: 'r4', title: '情侶浪漫約會線', travelerTypes: ['couple'], travelerLabels: ['情侶約會'], transport: 'car', transportLabel: '開車自駕', theme: 'romance', themeLabel: '浪漫約會', area: '頭城、礁溪、梅花湖、南方澳', stay: '礁溪溫泉旅宿', intro: '主打海景、景觀咖啡、溫泉與夜景，讓整趟旅行有滿滿約會氛圍。', highlights: ['海景餐廳', '景觀咖啡', '夜晚泡湯'], foods: ['景觀早午餐', '海鮮晚餐', '甜點下午茶'], drinks: ['海景咖啡', '氣泡飲', '飯店迎賓酒 / 茶'], play: ['外澳海邊散步', '梅花湖約會', '南方澳看夕陽'], shop: ['情侶紀念伴手禮', '甜點禮盒', '在地小物'], tips: ['可選有私人湯屋的旅宿提升儀式感。', '傍晚觀景點建議抓日落前抵達。'], days: [{ title: 'Day 1｜海景開場', focus: '從頭城海線開始，營造旅行儀式感。', stops: [{ time: '10:30', name: '外澳沙灘', desc: '海景散步拍照。', meta: ['約會氛圍', '拍照好看'] }, { time: '12:00', name: '海景餐廳午餐', desc: '選一間看海餐廳慢慢用餐。', meta: ['儀式感', '景觀佳'] }, { time: '14:30', name: '景觀咖啡館', desc: '下午茶時段最適合。', meta: ['浪漫度高', '聊天放鬆'] }, { time: '18:00', name: '礁溪住宿泡湯', desc: '晚上享受雙人泡湯。', meta: ['情侶首選', '放鬆'] }] }, { title: 'Day 2｜湖景與夜景', focus: '白天湖邊慢遊，傍晚看海景夜色。', stops: [{ time: '09:30', name: '梅花湖', desc: '環湖散步、踩船或騎單車。', meta: ['輕鬆約會', '景色柔和'] }, { time: '12:30', name: '午餐：冬山餐廳', desc: '田園感餐廳很適合情侶。', meta: ['氣氛佳', '不擁擠'] }, { time: '16:30', name: '南方澳觀景台', desc: '看夕陽、海港與山海線條。', meta: ['日落推薦', '必拍'] }, { time: '18:30', name: '海鮮晚餐', desc: '安排稍有質感的海鮮餐廳。', meta: ['約會晚餐', '在地特色'] }] }, { title: 'Day 3｜文青收尾', focus: '以文化與伴手禮收尾。', stops: [{ time: '10:00', name: '宜蘭設治紀念館', desc: '輕鬆散步拍照。', meta: ['文青感', '不匆忙'] }, { time: '12:00', name: '午餐＋甜點', desc: '找間氣氛好的餐廳。', meta: ['甜蜜收尾', '適合拍照'] }, { time: '14:00', name: '採買返程', desc: '帶點伴手禮回家。', meta: ['旅行紀念', '輕鬆結束'] }] }] },
+      { id: 'r5', title: '好友夜市美食線', travelerTypes: ['friends'], travelerLabels: ['好友出遊'], transport: 'train', transportLabel: '火車為主', theme: 'food', themeLabel: '美食夜市', area: '礁溪、宜蘭市、羅東', stay: '羅東車站或夜市周邊', intro: '適合三五好友搭火車出遊，把重點放在小吃、夜市與市區走逛。', highlights: ['火車好移動', '夜市重點', '小吃密度高'], foods: ['羅東夜市', '蒜味肉羹', '蔥油餅', '包心粉圓'], drinks: ['手搖飲', '復古冰店飲品', '咖啡館下午茶'], play: ['夜市邊走邊吃', '幾米公園拍照', '市區散步聊天'], shop: ['夜市小物', '牛舌餅', '奶凍捲'], tips: ['火車站周邊住宿最方便。', '熱門小吃可避開晚餐尖峰。'], days: [{ title: 'Day 1｜礁溪吃起來', focus: '抵達宜蘭第一天先從礁溪美食開場。', stops: [{ time: '11:00', name: '礁溪站周邊', desc: '寄物後步行覓食。', meta: ['火車方便', '不租車也行'] }, { time: '12:00', name: '蔥油餅＋小吃午餐', desc: '多點幾樣一起分食。', meta: ['好友最適合', '吃得多樣'] }, { time: '15:00', name: '咖啡館休息', desc: '午後聊天拍照。', meta: ['氣氛輕鬆', '補充體力'] }, { time: '18:00', name: '羅東夜市', desc: '第一晚直接衝夜市。', meta: ['重點行程', '邊走邊吃'] }] }, { title: 'Day 2｜市區小吃巡禮', focus: '用步行＋短程計程車串接經典美食。', stops: [{ time: '10:00', name: '宜蘭市小吃線', desc: '蒜味肉羹、卜肉、糕渣依喜好安排。', meta: ['在地經典', '彈性高'] }, { time: '14:00', name: '幾米公園', desc: '吃飽後走走消化。', meta: ['短停好拍', '交通方便'] }, { time: '16:00', name: '甜點或冰品', desc: '補下午茶再繼續逛。', meta: ['好友聊天', '輕鬆安排'] }, { time: '18:30', name: '第二輪夜市／居酒屋', desc: '可選羅東夜市或車站周邊餐酒館。', meta: ['夜生活感', '自由度高'] }] }, { title: 'Day 3｜採買返程', focus: '把伴手禮與最後一餐補齊。', stops: [{ time: '10:30', name: '伴手禮採買', desc: '奶凍捲、牛舌餅、蜜餞。', meta: ['方便攜帶', '車站附近可買'] }, { time: '12:00', name: '最後午餐', desc: '挑還沒吃到的名單收尾。', meta: ['補完遺珠', '旅行圓滿'] }, { time: '14:00', name: '搭車返程', desc: '輕鬆結束美食之旅。', meta: ['無壓返程', '朋友聚會適合'] }] }] },
+      { id: 'r6', title: '山海戶外活力線', travelerTypes: ['friends', 'couple'], travelerLabels: ['好友出遊', '情侶約會'], transport: 'car', transportLabel: '開車自駕', theme: 'nature', themeLabel: '山海戶外', area: '頭城、礁溪、冬山、蘇澳', stay: '礁溪或蘇澳', intro: '適合喜歡海景、步道與戶外活動的人，節奏比慢旅更有活力。', highlights: ['沙灘', '步道', '海港晚景'], foods: ['海鮮米粉', '甕窯雞', '古早味冰品'], tips: ['記得準備防曬、防蚊與好走鞋。', '戶外活動前請先看天氣。'], days: [{ title: 'Day 1｜頭城海線', focus: '用海景展開三天旅程。', stops: [{ time: '10:30', name: '外澳沙灘', desc: '海邊散步或玩水。', meta: ['活力開場', '夏季推薦'] }, { time: '12:30', name: '午餐：海景餐廳', desc: '享受看海用餐。', meta: ['景觀佳', '放鬆'] }, { time: '15:00', name: '烏石港周邊', desc: '可依季節安排賞鯨或港邊走逛。', meta: ['彈性活動', '海線特色'] }, { time: '18:00', name: '入住', desc: '晚上自由活動。', meta: ['保留體力', '隔天戶外'] }] }, { title: 'Day 2｜步道＋湖景', focus: '上午走步道，下午轉進舒適景點。', stops: [{ time: '08:30', name: '林美石磐步道', desc: '難度不高但很有山林感。', meta: ['戶外重點', '穿好鞋'] }, { time: '12:00', name: '午餐：礁溪', desc: '補充熱食與休息。', meta: ['恢復體力', '順路'] }, { time: '14:30', name: '梅花湖', desc: '下午散步或騎車剛剛好。', meta: ['動靜平衡', '景色佳'] }, { time: '18:30', name: '羅東夜市', desc: '晚上用夜市補足熱鬧感。', meta: ['小吃補給', '自由安排'] }] }, { title: 'Day 3｜蘇澳海景收尾', focus: '最後一天以海景與簡單採買結束。', stops: [{ time: '10:00', name: '南方澳觀景台', desc: '看海港全景。', meta: ['必拍', '短停佳'] }, { time: '11:30', name: '海鮮午餐', desc: '用海味作結。', meta: ['在地感', '有記憶點'] }, { time: '13:30', name: '返程', desc: '帶著戶外能量回家。', meta: ['順暢收尾', '不拖太晚'] }] }] },
+      { id: 'r7', title: '文青咖啡散步線', travelerTypes: ['couple', 'friends'], travelerLabels: ['情侶約會', '好友出遊'], transport: 'train', transportLabel: '火車為主', theme: 'culture', themeLabel: '文青文化', area: '宜蘭市、羅東、礁溪', stay: '宜蘭市區或羅東', intro: '適合喜歡老屋、書店、紀念館、咖啡館與慢步調的旅人。', highlights: ['文化景點', '咖啡館巡禮', '拍照感強'], foods: ['老宅咖啡甜點', '蒜味肉羹', '文青早午餐'], tips: ['可攜帶相機，許多空間很適合拍照。', '搭火車移動最省心。'], days: [{ title: 'Day 1｜宜蘭市文青路線', focus: '先從市區文化景點與咖啡館開始。', stops: [{ time: '10:30', name: '宜蘭設治紀念館', desc: '適合當作旅程開場。', meta: ['文青代表', '步調悠閒'] }, { time: '12:00', name: '早午餐或定食', desc: '安排氣氛好的店。', meta: ['拍照漂亮', '適合聊天'] }, { time: '14:00', name: '老屋咖啡館', desc: '慢慢喝咖啡、整理心情。', meta: ['慢旅核心', '舒適'] }, { time: '16:30', name: '幾米公園', desc: '可順遊拍照。', meta: ['火車站近', '短停'] }] }, { title: 'Day 2｜羅東文化＋夜市', focus: '白天文化散步，夜晚轉進熱鬧夜市。', stops: [{ time: '10:00', name: '羅東林業文化園區', desc: '綠意與歷史感兼具。', meta: ['好拍照', '散步舒服'] }, { time: '12:30', name: '午餐：羅東餐廳', desc: '選文青風格簡餐店。', meta: ['舒適用餐', '休息好'] }, { time: '15:00', name: '書店或咖啡館', desc: '延續慢步調。', meta: ['放空', '聊天'] }, { time: '18:30', name: '羅東夜市', desc: '晚上切換成小吃模式。', meta: ['動靜對比', '旅程豐富'] }] }, { title: 'Day 3｜礁溪收尾', focus: '最後一天泡腳與採買。', stops: [{ time: '10:30', name: '礁溪足湯', desc: '讓旅行舒服結束。', meta: ['療癒感', '短停剛好'] }, { time: '12:00', name: '午餐＋伴手禮', desc: '買完再搭車返程。', meta: ['火車方便', '節奏輕鬆'] }, { time: '14:00', name: '返程', desc: '結束文青系小旅行。', meta: ['簡單順路', '不勉強'] }] }] },
+      { id: 'r8', title: '客運輕鬆自由線', travelerTypes: ['friends', 'family'], travelerLabels: ['好友出遊', '全家出遊'], transport: 'bus', transportLabel: '客運輕旅', theme: 'relax', themeLabel: '療癒慢旅', area: '礁溪、宜蘭市、羅東', stay: '礁溪或羅東站周邊', intro: '不開車也能玩得舒服，集中在交通便利、生活機能高的區域。', highlights: ['不用租車', '移動簡單', '景點集中'], foods: ['礁溪小吃', '羅東夜市', '宜蘭肉羹'], tips: ['優先選擇車站附近住宿。', '盡量避免跨太遠區域，行程更輕鬆。'], days: [{ title: 'Day 1｜礁溪進站就能玩', focus: '以礁溪站周邊景點為主。', stops: [{ time: '11:00', name: '礁溪站寄物', desc: '抵達後先輕鬆覓食。', meta: ['交通方便', '少轉乘'] }, { time: '12:00', name: '礁溪午餐', desc: '周邊選擇很多。', meta: ['步行可達', '不費力'] }, { time: '14:00', name: '湯圍溝公園', desc: '散步、足湯、逛街。', meta: ['輕鬆', '適合多人'] }, { time: '18:00', name: '回住宿休息', desc: '晚上自由安排。', meta: ['簡單省力', '客運友善'] }] }, { title: 'Day 2｜宜蘭市＋羅東', focus: '搭車串兩個重點生活圈。', stops: [{ time: '10:00', name: '幾米公園', desc: '車站周邊好抵達。', meta: ['拍照方便', '短停'] }, { time: '12:00', name: '宜蘭午餐', desc: '肉羹或定食都好。', meta: ['美食多', '交通順'] }, { time: '15:00', name: '移動至羅東', desc: '入住或先寄物。', meta: ['轉場簡單', '生活機能好'] }, { time: '18:00', name: '羅東夜市', desc: '直接解決晚餐。', meta: ['旅客最愛', '選擇多'] }] }, { title: 'Day 3｜採買返程', focus: '最後一天以車站周邊行程為主。', stops: [{ time: '10:30', name: '伴手禮採買', desc: '車站周邊就能買齊。', meta: ['不繞路', '方便'] }, { time: '12:00', name: '午餐', desc: '吃完直接搭車。', meta: ['省轉乘', '收尾乾脆'] }, { time: '14:00', name: '返程', desc: '不開車也能玩得很完整。', meta: ['輕鬆旅程', '負擔低'] }] }] },
+      { id: 'r9', title: '海鮮漁港饗宴線', travelerTypes: ['family', 'friends', 'couple'], travelerLabels: ['全家出遊', '好友出遊', '情侶約會'], transport: 'car', transportLabel: '開車自駕', theme: 'food', themeLabel: '美食夜市', area: '頭城、蘇澳、南方澳', stay: '蘇澳海景區', intro: '以海線和海鮮為主題，適合愛吃海味、喜歡海景的人。', highlights: ['海鮮餐桌', '海港風景', '海線公路感'], foods: ['南方澳海鮮', '海鮮米粉', '現撈小卷'], tips: ['海鮮餐廳可先看營業時間。', '若帶長者，傍晚海風較強請備薄外套。'], days: [{ title: 'Day 1｜頭城海線', focus: '以海景與輕鬆用餐為主。', stops: [{ time: '10:30', name: '烏石港', desc: '港邊散步與看海。', meta: ['海線氣氛', '停留彈性'] }, { time: '12:30', name: '海景午餐', desc: '先吃一頓看海的開場餐。', meta: ['儀式感', '拍照美'] }, { time: '15:30', name: '外澳短停', desc: '簡單踏浪或咖啡休息。', meta: ['海風療癒', '不趕'] }, { time: '18:00', name: '蘇澳入住', desc: '準備隔天海鮮主題。', meta: ['住海邊', '氣氛佳'] }] }, { title: 'Day 2｜南方澳海鮮日', focus: '把重點留給漁港與海鮮。', stops: [{ time: '09:30', name: '南方澳觀景台', desc: '早上視野也很棒。', meta: ['海港全景', '必拍'] }, { time: '11:30', name: '海鮮午餐', desc: '安排一餐完整海鮮大餐。', meta: ['主題核心', '新鮮現撈'] }, { time: '14:30', name: '內埤海灣', desc: '散步看海，消化一下。', meta: ['節奏舒緩', '風景佳'] }, { time: '18:00', name: '冷泉或夜間散步', desc: '視季節安排。', meta: ['彈性調整', '第二晚輕鬆'] }] }, { title: 'Day 3｜蘇澳收尾返程', focus: '最後一天維持海邊節奏，不轉太遠。', stops: [{ time: '10:30', name: '買海味伴手禮', desc: '例如海產乾貨或在地點心。', meta: ['紀念性強', '在地感'] }, { time: '12:00', name: '簡單午餐', desc: '吃完從蘇澳返程。', meta: ['不折返', '省時間'] }, { time: '13:30', name: '返程', desc: '結束海鮮飽足旅。', meta: ['順路', '不拖延'] }] }] },
+      { id: 'r10', title: '雨天備案安心線', travelerTypes: ['family', 'senior', 'parentkid'], travelerLabels: ['全家出遊', '長者同行', '親子旅行'], transport: 'car', transportLabel: '開車自駕', theme: 'culture', themeLabel: '文青文化', area: '宜蘭市、員山、羅東、礁溪', stay: '宜蘭市或羅東', intro: '專為天氣不穩時設計，盡量選室內、半室內與交通方便的景點。', highlights: ['室內景點多', '長幼皆宜', '彈性高'], foods: ['觀光工廠下午茶', '宜蘭小吃', '夜市小點'], tips: ['非常適合梅雨季或冬天。', '可把戶外點當作加碼選項，不必硬排。'], days: [{ title: 'Day 1｜觀光工廠日', focus: '第一天先用室內景點穩穩展開。', stops: [{ time: '10:30', name: '橘之鄉或觀光工廠', desc: '採果、手作、試吃都適合。', meta: ['室內友善', '親子可玩'] }, { time: '12:30', name: '午餐', desc: '安排附近餐廳。', meta: ['不淋雨', '好銜接'] }, { time: '14:30', name: '咖啡館或酒廠', desc: '適合長輩休息。', meta: ['舒適避雨', '悠閒'] }, { time: '18:00', name: '住宿休息', desc: '晚餐後回飯店。', meta: ['安全穩定', '不趕路'] }] }, { title: 'Day 2｜文化室內線', focus: '用文化景點與市區移動完成第二天。', stops: [{ time: '10:00', name: '宜蘭文學館', desc: '雨天也能舒服走逛。', meta: ['文化感', '節奏平穩'] }, { time: '12:00', name: '午餐：宜蘭市區', desc: '選有座位且舒適的餐廳。', meta: ['長者友善', '親子也行'] }, { time: '14:30', name: '幾米公園／短停', desc: '若雨勢小可快速拍照。', meta: ['彈性調整', '不勉強'] }, { time: '18:00', name: '羅東夜市或商圈', desc: '若天氣不好可縮短停留。', meta: ['自由度高', '美食補足'] }] }, { title: 'Day 3｜伴手禮收尾', focus: '最後一天留最多機動空間。', stops: [{ time: '10:30', name: '伴手禮採買', desc: '集中在單一區域完成。', meta: ['效率高', '不淋雨'] }, { time: '12:00', name: '午餐', desc: '找返程順路的餐廳。', meta: ['彈性大', '不趕'] }, { time: '13:30', name: '返程', desc: '天氣不好也能順利收尾。', meta: ['安心型行程', '長幼皆宜'] }] }] }
+    ];
+    const state = { traveler: 'all', transport: 'all', theme: 'all', selectedRouteId: 'r1' };
+    const travelerFiltersEl = document.getElementById('travelerFilters');
+    const transportFiltersEl = document.getElementById('transportFilters');
+    const themeFiltersEl = document.getElementById('themeFilters');
+    const routeGridEl = document.getElementById('routeGrid');
+    const resultSummaryEl = document.getElementById('resultSummary');
+    const routeTitleEl = document.getElementById('routeTitle');
+    const routeIntroEl = document.getElementById('routeIntro');
+    const routeMetaEl = document.getElementById('routeMeta');
+    const itineraryEl = document.getElementById('itinerary');
+    const routeQuadrantsEl = document.getElementById('routeQuadrants');
+    const routeInfoEl = document.getElementById('routeInfo');
+    function renderChips(container, items, key) {
+      container.innerHTML = '';
+      items.forEach(item => {
+        const button = document.createElement('button');
+        button.className = `chip ${state[key] === item.id ? 'active' : ''}`;
+        button.textContent = item.label;
+        button.addEventListener('click', () => { state[key] = item.id; ensureSelectedRouteVisible(); renderAll(); });
+        container.appendChild(button);
+      });
+    }
+    function getFilteredRoutes() {
+      return routes.filter(route => {
+        const travelerMatch = state.traveler === 'all' || route.travelerTypes.includes(state.traveler);
+        const transportMatch = state.transport === 'all' || route.transport === state.transport;
+        const themeMatch = state.theme === 'all' || route.theme === state.theme;
+        return travelerMatch && transportMatch && themeMatch;
+      });
+    }
+    function ensureSelectedRouteVisible() {
+      const filtered = getFilteredRoutes();
+      if (!filtered.some(route => route.id === state.selectedRouteId)) state.selectedRouteId = filtered.length ? filtered[0].id : null;
+    }
+    function renderRouteCards() {
+      const filtered = getFilteredRoutes();
+      const travelerLabel = filterOptions.travelers.find(i => i.id === state.traveler)?.label || '全部';
+      const transportLabel = filterOptions.transports.find(i => i.id === state.transport)?.label || '全部';
+      const themeLabel = filterOptions.themes.find(i => i.id === state.theme)?.label || '全部';
+      resultSummaryEl.textContent = `目前顯示：${filtered.length} 條路線／${travelerLabel}／${transportLabel}／${themeLabel}`;
+      if (!filtered.length) { routeGridEl.innerHTML = '<div class="empty">目前沒有符合條件的路線，請切換其他篩選條件看看。</div>'; return; }
+      routeGridEl.innerHTML = filtered.map(route => `<article class="route-card ${route.id === state.selectedRouteId ? 'active' : ''}" data-route-id="${route.id}"><div class="route-top"><div><h3>${route.title}</h3><p>${route.intro}</p></div><span class="tag">${route.themeLabel}</span></div><div class="meta-row">${route.travelerLabels.map(label => `<span class="mini-tag">${label}</span>`).join('')}<span class="mini-tag">${route.transportLabel}</span><span class="mini-tag">住 ${route.stay}</span></div></article>`).join('');
+      routeGridEl.querySelectorAll('.route-card').forEach(card => card.addEventListener('click', () => { state.selectedRouteId = card.dataset.routeId; renderAll(); }));
+    }
+    function renderRouteDetail() {
+      const route = routes.find(item => item.id === state.selectedRouteId);
+      if (!route) {
+        routeTitleEl.textContent = '沒有可顯示的路線'; routeIntroEl.className = 'empty'; routeIntroEl.textContent = '請調整篩選條件後再選擇路線。'; routeMetaEl.innerHTML = ''; routeQuadrantsEl.innerHTML = ''; itineraryEl.innerHTML = ''; routeInfoEl.className = 'empty'; routeInfoEl.textContent = '目前沒有路線資訊。'; return;
+      }
+      routeTitleEl.textContent = route.title; routeIntroEl.className = ''; routeIntroEl.textContent = route.intro;
+      routeMetaEl.innerHTML = `<div class="meta-row" style="margin-top: 14px; margin-bottom: 8px;">${route.travelerLabels.map(label => `<span class="mini-tag">適合：${label}</span>`).join('')}<span class="mini-tag">交通：${route.transportLabel}</span><span class="mini-tag">區域：${route.area}</span><span class="mini-tag">住宿：${route.stay}</span></div>`;
+      routeQuadrantsEl.innerHTML = `
+        <article class="quad-card"><h4>吃｜必吃推薦</h4><ul>${route.foods.map(item => `<li>${item}</li>`).join('')}</ul></article>
+        <article class="quad-card"><h4>喝｜飲品 / 咖啡</h4><ul>${(route.drinks || []).map(item => `<li>${item}</li>`).join('')}</ul></article>
+        <article class="quad-card"><h4>玩｜體驗 / 景點</h4><ul>${(route.play || []).map(item => `<li>${item}</li>`).join('')}</ul></article>
+        <article class="quad-card"><h4>買｜伴手禮 / 採買</h4><ul>${(route.shop || []).map(item => `<li>${item}</li>`).join('')}</ul></article>
+      `;
+      itineraryEl.innerHTML = route.days.map(day => `<article class="day-card"><div class="day-header"><h4>${day.title}</h4><p>${day.focus}</p></div><div class="timeline">${day.stops.map(stop => `<div class="stop"><div class="time">${stop.time}</div><div class="stop-content"><h5>${stop.name}</h5><p>${stop.desc}</p><div class="meta-row">${stop.meta.map(item => `<span class="mini-tag">${item}</span>`).join('')}</div></div></div>`).join('')}</div></article>`).join('');
+      routeInfoEl.className = '';
+      routeInfoEl.innerHTML = `<h3>路線資訊</h3><ul><li><strong>適合遊客類型：</strong>${route.travelerLabels.join('、')}</li><li><strong>推薦住宿區域：</strong>${route.stay}</li><li><strong>行程亮點：</strong>${route.highlights.join('、')}</li><li><strong>吃喝玩買是否齊全：</strong>吃、喝、玩、買四個向度皆已整理</li></ul><h3 style="margin-top:18px;">旅行提醒</h3><ul>${route.tips.map(tip => `<li>${tip}</li>`).join('')}</ul>`;
+    }
+    function renderAll() { renderChips(travelerFiltersEl, filterOptions.travelers, 'traveler'); renderChips(transportFiltersEl, filterOptions.transports, 'transport'); renderChips(themeFiltersEl, filterOptions.themes, 'theme'); renderRouteCards(); renderRouteDetail(); }
+    ensureSelectedRouteVisible(); renderAll();
+  </script>
+</body>
+</html>
